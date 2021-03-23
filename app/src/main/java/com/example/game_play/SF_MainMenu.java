@@ -1,6 +1,7 @@
 package com.example.game_play;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -13,7 +14,7 @@ public class SF_MainMenu extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final SFengine sFengine = new SFengine();
+        final SFengine sFengine = new SFengine(this);
 
         start_button = findViewById(R.id.id_play_button);
         stop_button = findViewById(R.id.id_stop_button);
@@ -26,6 +27,8 @@ public class SF_MainMenu extends Activity {
             @Override
             public void onClick(View v) {
                 start_button.animate().rotation(1800).setDuration(3000);
+                Intent game = new Intent(getApplicationContext(),SF_Game.class);
+                SF_MainMenu.this.startActivity(game);
             }
         });
         stop_button.setOnClickListener(new View.OnClickListener() {

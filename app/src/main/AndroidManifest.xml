@@ -26,7 +26,9 @@
         <activity
             android:name=".SF_MainMenu"
             android:screenOrientation="portrait"></activity>
-
+        <activity
+            android:name=".SF_Game"
+            android:screenOrientation="portrait"></activity>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
