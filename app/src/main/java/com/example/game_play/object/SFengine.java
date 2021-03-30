@@ -12,12 +12,18 @@ public class SFengine {
     public static final int BACKGROUND_LAYER_ONE = R.drawable.backgroundstars;
     public static Context context;
     public static float SCROLL_BACKGROUND_1 = .002f;
-    public static final int GAME_THREAD_FPS_SLEEP =(1000/60);
+    public static final int GAME_THREAD_FPS_SLEEP = (1000 / 60);
     public static float SCROLL_BACKGROUND_2 = .007f;//rychlejsie to pojde ako to prve baground1
-    public static final int BACKGROUND_LAYER_TWO= R.drawable.debris;
+    public static final int BACKGROUND_LAYER_TWO = R.drawable.debris;
 
-    public SFengine(Context context){
-        this.context=context;
+    public static int playerFlightAction = 0;
+    public static final int PLAYER_SHIP = R.drawable.good_sprite;
+    public static final int PLAYER_BANK_LEFT_1 = 1;
+    public static final int PLAYER_RELEASE = 3;
+    public static final int PLAYER_BANK_RIGHT_1 = 4;
+
+    public SFengine(Context context) {
+        this.context = context;
     }
 
 
