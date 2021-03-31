@@ -1,6 +1,7 @@
 package com.example.game_play.object;
 
 import android.content.Context;
+import android.view.Display;
 import android.view.View;
 
 import com.example.game_play.R;
@@ -21,6 +22,10 @@ public class SFengine {
     public static final int PLAYER_BANK_LEFT_1 = 1;
     public static final int PLAYER_RELEASE = 3;
     public static final int PLAYER_BANK_RIGHT_1 = 4;
+    public static final int PLAYER_FRAMES_BETWEEN_ANI = 9;
+    public static final float PLAYER_BANK_SPEED = .1f;
+    public static final float playerBankPosX = 1.75f;
+    public static Display display;
 
     public SFengine(Context context) {
         this.context = context;
