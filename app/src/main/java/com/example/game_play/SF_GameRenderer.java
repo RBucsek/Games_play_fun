@@ -11,7 +11,12 @@ public class SF_GameRenderer implements GLSurfaceView.Renderer {
     private SF_Background sf_background = new SF_Background();
     private SF_Background sf_background2 = new SF_Background();
     private SF_GoodGuy player1 = new SF_GoodGuy();
+
     private int goodGuyBankFrames = 0;
+    private long loopStart = 0;
+    private long loopEnd = 0;
+    private long loopRuntime =0;
+
     private float bgScroll1;
     private float bgScroll2;
 
@@ -88,8 +93,11 @@ public class SF_GameRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {//vykreslovacia jednotka kresli snimek na obrazovku
+        loopStart = System.currentTimeMillis();
         try {
-            Thread.sleep(SFengine.GAME_THREAD_FPS_SLEEP);
+            if(loopRuntime < SFengine.GAME_THREAD_FPS_SLEEP) {
+                Thread.sleep(SFengine.GAME_THREAD_FPS_SLEEP - loopRuntime);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -97,9 +105,14 @@ public class SF_GameRenderer implements GLSurfaceView.Renderer {
         scrollBackground1(gl);
         scrollBackground2(gl);
 
+        movePlayer1(gl); // vykreslovanie hry volanie);
+
         //tuto volame veskere dalsi vykreslovanie
         gl.glEnable(GL10.GL_BLEND);
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+
+        loopEnd = System.currentTimeMillis();
+        loopRuntime = (loopEnd - loopStart);
     }
 
     private void movePlayer1(GL10 gl) {//skuma vstupni objekt a na zaklade hodnoty tohoto vstupu prevedie urcity kod
@@ -109,8 +122,67 @@ public class SF_GameRenderer implements GLSurfaceView.Renderer {
                 gl.glLoadIdentity();
                 gl.glPushMatrix();
                 gl.glScalef(.25f, .25f, 1f);
+                //posuvanie vrcholov pomocou glTranslatf s premennou playerBankposX
+                if (goodGuyBankFrames < SFengine.PLAYER_FRAMES_BETWEEN_ANI && SFengine.playerBankPosX > 0) {//snimkovanie kedy sa ma prejst na dalsi obrazok
+                    SFengine.playerBankPosX -= SFengine.PLAYER_BANK_SPEED;
+                    gl.glTranslatef(SFengine.playerBankPosX, 0f, 0f);//pohyb postavy na osy x
+
+                    //osa x archu spritu prebieha od 0 do 1. Podelime 4mi kedze 4 obrazky mame tak kazdy sprite bude obsadzovat 0.25 osy x, prvy obrazok od 0 dp 0.24 druhy od 0.25 do 0,49 atd
+
+                    gl.glMatrixMode(GL10.GL_TEXTURE);
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(0.75f, 0.0f, 0.0f);
+                    // sledovanie ked mame prejst na druhy obrazok
+
+                    goodGuyBankFrames += 1;
+                }
+                else if(goodGuyBankFrames >= SFengine.PLAYER_FRAMES_BETWEEN_ANI && SFengine.playerBankPosX > 0){
+                    SFengine.playerBankPosX -= SFengine.PLAYER_BANK_SPEED;
+                    gl.glTranslatef(SFengine.playerBankPosX,0f,0f);
+                    gl.glMatrixMode(GL10.GL_TEXTURE);
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(0.0f,0.25f,0.0f);
+                }
+                else {
+                    gl.glTranslatef(SFengine.playerBankPosX, 0f, 0f);
+                    gl.glMatrixMode(GL10.GL_TEXTURE);
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(0.0f, 0.0f, 0.0f);
+                    //nastavenie pohybu lietadla aby nepreslo za okraj pomocou if else
+                }
+                //nakreslujeme metodu draw a vyjmeme maticu zo zasobnika.
+                player1.draw(gl);
+                gl.glPopMatrix();
+                gl.glLoadIdentity();
                 break;
+                //prikaz case a pohyb dolava a impolentovanie dvoch snimkov spritove animacie je hotovy
             case SFengine.PLAYER_BANK_RIGHT_1:
+                gl.glMatrixMode(GL10.GL_MODELVIEW);
+                gl.glLoadIdentity();
+                gl.glPushMatrix();
+                gl.glScalef(.25f,.25f,1f);
+                if(goodGuyBankFrames < SFengine.PLAYER_FRAMES_BETWEEN_ANI && SFengine.playerBankPosX < 3){
+                    SFengine.playerBankPosX += SFengine.PLAYER_BANK_SPEED;
+                    gl.glTranslatef(SFengine.playerBankPosX,0f,0f);
+                    gl.glMatrixMode(GL10.GL_TEXTURE);
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(0.25f,0.0f,0.0f);
+                    goodGuyBankFrames +=1; // posun do prava
+                } else if(goodGuyBankFrames >= SFengine.PLAYER_FRAMES_BETWEEN_ANI && SFengine.playerBankPosX < 3){
+                    SFengine.playerBankPosX += SFengine.PLAYER_BANK_SPEED;
+                    gl.glTranslatef(SFengine.playerBankPosX,0f,0f);
+                    gl.glMatrixMode(GL10.GL_TEXTURE);
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(0.50f,0.0f,0.0f);
+                }else{
+                    gl.glTranslatef(SFengine.playerBankPosX,0f,0f);
+                    gl.glMatrixMode(GL10.GL_TEXTURE);
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(0.0f,0.0f,0.0f);
+                }
+                player1.draw(gl);
+                gl.glPopMatrix();
+                gl.glLoadIdentity();
                 break;
             case SFengine.PLAYER_RELEASE://hrac pri pohybe postavou uvolni ovladanie vtedy sa zavola RELEASE, je to uplne rovnake ako default cast
                 gl.glMatrixMode(GL10.GL_MODELVIEW);
